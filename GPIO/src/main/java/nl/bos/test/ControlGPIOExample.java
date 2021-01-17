@@ -3,37 +3,26 @@ package nl.bos.test;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Random;
 
 public class ControlGPIOExample {
 
     private static boolean run = true;
-    private int speed = 1;
     private static final GpioController GPIO = GpioFactory.getInstance();
 
     public ControlGPIOExample() throws InterruptedException {
-        List<GpioPinDigitalOutput> leds = new ArrayList();
-        leds.add(GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_01));
-        leds.add(GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_02));
-        leds.add(GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_03));
-        leds.add(GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_04));
-        leds.add(GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_05));
-        leds.add(GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_06));
+        GpioPinDigitalOutput pinRed = GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_23);
+        GpioPinDigitalOutput pinGreen = GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_24);
+        GpioPinDigitalOutput pinBlue = GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_25);
         GpioPinDigitalInput myButton = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_29, PinPullResistance.PULL_DOWN);
 
-        for (GpioPinDigitalOutput led : leds) {
-            led.setShutdownOptions(true, PinState.LOW, PinPullResistance.OFF);
-        }
+        pinRed.setShutdownOptions(true, PinState.LOW, PinPullResistance.OFF);
+        pinGreen.setShutdownOptions(true, PinState.LOW, PinPullResistance.OFF);
+        pinBlue.setShutdownOptions(true, PinState.LOW, PinPullResistance.OFF);
 
         myButton.addListener((GpioPinListenerDigital) event -> {
             if (event.getState().isHigh()) {
-                speed++;
-                System.out.println(String.format("Button push; speed is %d", speed));
-                if (speed == 20) {
-                    System.out.println("Stopping program!");
-                    run = false;
-                }
+                run = false;
             } else {
                 System.out.println("Button release");
                 // do nothing
@@ -41,10 +30,10 @@ public class ControlGPIOExample {
         });
 
         while (run) {
-            for (GpioPinDigitalOutput led : leds) {
-                led.pulse(1000 / speed);
-                Thread.sleep(750 / speed);
-            }
+            pinRed.pulse(new Random().nextInt(900) + 100);
+            pinGreen.pulse(new Random().nextInt(900) + 100);
+            pinBlue.pulse(new Random().nextInt(900) + 100);
+            Thread.sleep(900);
         }
     }
 
