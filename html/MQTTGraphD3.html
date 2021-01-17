@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MQTT Grapg D3</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css" />
+    <script src="mqtt.js" type="text/javascript"></script>
+</head>
+<body>
+    <H1>MQTT connection over websockets</H1>
+    <p><input type="button" onclick="MQTTConnect();" value="Connect" style="height:25px; width:125px" /></p>
+    <p><input type="button" onclick="MQTTDisconnect();" value="Disconnect" style="height:25px; width:125px"/></p>
+    <p><input type="text" id="txtMessage" value="40" style="height:19px" />&nbsp;&nbsp;<input id="btnSend" disabled type="button" onclick="sendMessage();" value="Send" style="height:25px; width:125px"/></p>
+    <div id="graphdiv"></div>
+</body>
+</html>
