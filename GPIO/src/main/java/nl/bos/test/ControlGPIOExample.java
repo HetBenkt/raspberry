@@ -1,32 +1,56 @@
 package nl.bos.test;
 
 import com.pi4j.io.gpio.*;
+import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ControlGPIOExample {
 
+    private static boolean run = true;
+    private int speed = 1;
+    private static final GpioController GPIO = GpioFactory.getInstance();
+
+    public ControlGPIOExample() throws InterruptedException {
+        List<GpioPinDigitalOutput> leds = new ArrayList();
+        leds.add(GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_01));
+        leds.add(GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_02));
+        leds.add(GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_03));
+        leds.add(GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_04));
+        leds.add(GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_05));
+        leds.add(GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_06));
+        GpioPinDigitalInput myButton = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_29, PinPullResistance.PULL_DOWN);
+
+        for (GpioPinDigitalOutput led : leds) {
+            led.setShutdownOptions(true, PinState.LOW, PinPullResistance.OFF);
+        }
+
+        myButton.addListener((GpioPinListenerDigital) event -> {
+            if (event.getState().isHigh()) {
+                speed++;
+                System.out.println(String.format("Button push; speed is %d", speed));
+                if (speed == 20) {
+                    System.out.println("Stopping program!");
+                    run = false;
+                }
+            } else {
+                System.out.println("Button release");
+                // do nothing
+            }
+        });
+
+        while (run) {
+            for (GpioPinDigitalOutput led : leds) {
+                led.pulse(1000 / speed);
+                Thread.sleep(750 / speed);
+            }
+        }
+    }
+
     public static void main(String[] args) throws InterruptedException {
         System.out.println("GPIO Follow leds example started...");
-
-        final GpioController gpio = GpioFactory.getInstance();
-
-        final GpioPinDigitalOutput led1 = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_01);
-        final GpioPinDigitalOutput led2 = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_02);
-        final GpioPinDigitalOutput led3 = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_03);
-        final GpioPinDigitalOutput led4 = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_04);
-        final GpioPinDigitalOutput led5 = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_05);
-        final GpioPinDigitalOutput led6 = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_06);
-
-        led1.setShutdownOptions(true, PinState.LOW, PinPullResistance.OFF);
-        led2.setShutdownOptions(true, PinState.LOW, PinPullResistance.OFF);
-
-        led1.pulse(1000);
-        led2.pulse(2000);
-        led3.pulse(3000);
-        led4.pulse(4000);
-        led5.pulse(5000);
-        led6.pulse(6000);
-
-        Thread.sleep(10000);
-        gpio.shutdown();
+        new ControlGPIOExample();
+        GPIO.shutdown();
     }
 }
