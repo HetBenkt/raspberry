@@ -3,7 +3,7 @@ package nl.bos.test;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
-public class ControlGPIOExample {
+public class ControlGPIOExample1 {
 
     public static void main(String[] args) throws InterruptedException {
         System.out.println("GPIO Blinking example started...");
