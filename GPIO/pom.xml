@@ -63,7 +63,7 @@
                                 <sshexec host="${pi.host}" port="${pi.port}" username="${pi.user}"
                                          password="${pi.password}" trust="true" failonerror="false"
                                          verbose="true"
-                                         command="java -cp artifacts/${project.build.finalName}.jar:/opt/pi4j/lib/* nl.bos.test.ControlGPIOExample"/>
+                                         command="java -cp artifacts/${project.build.finalName}.jar:/opt/pi4j/lib/* nl.bos.test.DHT11Demo"/>
                             </tasks>
                         </configuration>
                     </execution>
